@@ -17,6 +17,7 @@ export abstract class Queue<T> {
 
   /**
    * Get the latest added element.
+   * (also back)
    */
   abstract rear (): T | undefined
 

@@ -1,6 +1,10 @@
 import { StackAsLinkedList } from '../stack/stack-as-linked-list.ts'
 import { Queue } from './queue.contract.ts'
 
+/**
+ * Implementation inspirated by:
+ * https://stackoverflow.com/questions/69192/how-to-implement-a-queue-using-two-stacks
+ */
 export class QueueAsStack<T> implements Queue<T> {
   private readonly inbox: StackAsLinkedList<T>
   private readonly outbox: StackAsLinkedList<T>
@@ -22,6 +26,7 @@ export class QueueAsStack<T> implements Queue<T> {
   dequeue (): T | undefined {
     if (this.isEmpty()) return undefined
 
+    // Reversing a stack (pouring the inbox into the outbox)
     if (this.outbox.isEmpty()) {
       while (!this.inbox.isEmpty())
         this.outbox.push(this.inbox.pop()!)

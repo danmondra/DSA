@@ -1,8 +1,12 @@
 import assert from 'assert'
 import { QueueAsLinkedList } from '../queue/queue-as-linked-list.ts'
 import { Stack } from './stack.contract.ts'
-import { testStack } from './stack.test.ts'
 
+/**
+ * An stack implemented with two queues could be implemented as below
+ * or using always an empty queue to store the latest pushed element
+ * and then move all the elements from the previous empty queue.
+ */
 export class StackAsQueue<T> implements Stack<T> {
   private inbox = new QueueAsLinkedList<T>()
   private outbox = new QueueAsLinkedList<T>()
