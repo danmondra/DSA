@@ -1,5 +1,5 @@
-import { StackAsLinkedList } from '../stack/stack-as-linked-list.ts'
-import { Queue } from './queue.contract.ts'
+import { StackAsLinkedList } from '../stack/stack-as-linked-list.js'
+import { Queue } from './queue.contract.js'
 
 /**
  * Implementation inspirated by:

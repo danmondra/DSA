@@ -1,8 +1,8 @@
 import test, { describe } from 'node:test'
 import assert from 'node:assert'
-import { SinglyLinkedList, SinglyLinkedListNode } from './singly-linked-list.ts'
-import { SinglyLinkedListContract } from './singly-linked-list.contract.ts'
-import { SinglyLinkedListNodeWithDummyNode } from './singly-linked-list-with-dummy-node.ts'
+import { SinglyLinkedList, SinglyLinkedListNode } from './singly-linked-list.js'
+import { SinglyLinkedListContract } from './singly-linked-list.contract.js'
+import { SinglyLinkedListNodeWithDummyNode } from './singly-linked-list-with-dummy-node.js'
 
 const testSinglyLinkedList = (
   ll: SinglyLinkedListContract<any>

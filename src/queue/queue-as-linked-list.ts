@@ -1,6 +1,6 @@
 import assert from 'node:assert'
-import { SinglyLinkedListNode } from '../linked-list/singly-linked-list.ts'
-import { Queue } from './queue.contract.ts'
+import { SinglyLinkedListNode } from '../linked-list/singly-linked-list.js'
+import { Queue } from './queue.contract.js'
 
 export class QueueAsLinkedList <T> implements Queue <T> {
   private frontNode: SinglyLinkedListNode<T> | null

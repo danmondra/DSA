@@ -1,5 +1,5 @@
-import { SinglyLinkedListContract } from './singly-linked-list.contract.ts'
-import { SinglyLinkedListNode } from './singly-linked-list.ts'
+import { SinglyLinkedListContract } from './singly-linked-list.contract.js'
+import { SinglyLinkedListNode } from './singly-linked-list.js'
 
 export class SinglyLinkedListNodeWithDummyNode<T> implements SinglyLinkedListContract<T> {
   private head: SinglyLinkedListNode<T> | null

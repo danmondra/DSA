@@ -1,7 +1,7 @@
 import assert from 'node:assert'
 import test, { describe } from 'node:test'
-import { selectionSort } from './selection-sort.ts'
-import { insertionSort } from './insertion-sort.ts'
+import { selectionSort } from './selection-sort.js'
+import { insertionSort } from './insertion-sort.js'
 
 export const testSortArray = (
   sortFn: (_a: any[]) => any

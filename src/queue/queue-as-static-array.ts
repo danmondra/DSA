@@ -1,4 +1,4 @@
-import { Queue } from './queue.contract.ts'
+import { Queue } from './queue.contract.js'
 
 /**
  * This is an inefficient implementation because it can only

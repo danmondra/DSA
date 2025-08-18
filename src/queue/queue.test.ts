@@ -1,11 +1,11 @@
 import test, { describe } from 'node:test'
 import assert from 'node:assert'
-import { QueueAsLinkedList } from './queue-as-linked-list.ts'
-import { Queue } from './queue.contract.ts'
-import { CircularQueue } from './circular-queue.ts'
-import { QueueAsDynamicArray } from './queue-as-dynamic-array.ts'
-import { QueueAsStaticArray } from './queue-as-static-array.ts'
-import { QueueAsStack } from './queue-as-stack.ts'
+import { QueueAsLinkedList } from './queue-as-linked-list.js'
+import { Queue } from './queue.contract.js'
+import { CircularQueue } from './circular-queue.js'
+import { QueueAsDynamicArray } from './queue-as-dynamic-array.js'
+import { QueueAsStaticArray } from './queue-as-static-array.js'
+import { QueueAsStack } from './queue-as-stack.js'
 
 type QueueImplementation<T> = {
   q: Queue<T>

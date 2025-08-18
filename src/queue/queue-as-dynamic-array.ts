@@ -1,4 +1,4 @@
-import { Queue } from './queue.contract.ts'
+import { Queue } from './queue.contract.js'
 
 export class QueueAsDynamicArray<T> implements Queue<T> {
   private readonly q: T[]

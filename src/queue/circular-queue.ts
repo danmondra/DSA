@@ -1,6 +1,6 @@
 import assert from 'node:assert'
 import test, { describe } from 'node:test'
-import { Queue } from './queue.contract.ts'
+import { Queue } from './queue.contract.js'
 
 /**
  * This implementation supose that the array is static.

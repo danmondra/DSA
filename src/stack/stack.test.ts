@@ -1,9 +1,9 @@
 import test, { beforeEach, describe } from 'node:test'
 import assert from 'node:assert'
-import { Stack } from './stack.contract.ts'
-import { StackAsArray } from './stack-as-array.ts'
-import { StackAsLinkedList } from './stack-as-linked-list.ts'
-import { StackAsQueue } from './stack-as-queue.ts'
+import { Stack } from './stack.contract.js'
+import { StackAsArray } from './stack-as-array.js'
+import { StackAsLinkedList } from './stack-as-linked-list.js'
+import { StackAsQueue } from './stack-as-queue.js'
 
 export const testStack = (
   s: Stack<any>,

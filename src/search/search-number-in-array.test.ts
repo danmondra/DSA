@@ -1,6 +1,6 @@
 import assert from 'node:assert'
 import test, { describe } from 'node:test'
-import { linearSearch } from './linear-search.ts'
+import { linearSearch } from './linear-search.js'
 
 /**
  * @returns the index if found or -1 if not found

@@ -1,4 +1,4 @@
-import { SinglyLinkedListNode } from './singly-linked-list.ts'
+import { SinglyLinkedListNode } from './singly-linked-list.js'
 
 export abstract class SinglyLinkedListContract <T> {
   abstract insertAt (at: number, value: T): SinglyLinkedListNode<T>

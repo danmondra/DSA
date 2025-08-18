@@ -1,5 +1,5 @@
-import { SinglyLinkedListNode } from '../linked-list/singly-linked-list.ts'
-import { Stack } from './stack.contract.ts'
+import { SinglyLinkedListNode } from '../linked-list/singly-linked-list.js'
+import { Stack } from './stack.contract.js'
 
 export class StackAsLinkedList<T extends unknown> implements Stack<T> {
   size: number

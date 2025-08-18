@@ -1,8 +1,9 @@
 {
   "compilerOptions": {
+    "outDir":  "./dist",
     "noEmit": true,
     "module": "nodenext",
-    "allowImportingTsExtensions": true,
+    "allowImportingTsExtensions": false,
     "esModuleInterop": true,
     "target": "esnext",
     "strict": true

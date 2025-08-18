@@ -1,4 +1,4 @@
-import { SinglyLinkedListContract } from './singly-linked-list.contract.ts'
+import { SinglyLinkedListContract } from './singly-linked-list.contract.js'
 
 export class SinglyLinkedListNode<T> {
   value: T

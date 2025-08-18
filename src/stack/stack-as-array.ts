@@ -1,4 +1,4 @@
-import { Stack } from './stack.contract.ts'
+import { Stack } from './stack.contract.js'
 
 export class StackAsArray<T extends unknown> implements Stack<T> {
   private readonly capacity: number
