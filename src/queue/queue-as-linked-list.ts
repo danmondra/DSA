@@ -75,4 +75,16 @@ export class QueueAsLinkedList <T> implements Queue <T> {
 
     return newQueue
   }
+
+  toArray (): T[] {
+    let current = this.frontNode
+    const arr: T[] = []
+
+    while (current !== null) {
+      arr.push(current.value)
+      current = current.next
+    }
+
+    return arr
+  }
 }

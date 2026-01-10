@@ -2,7 +2,7 @@ import { describe, test } from 'node:test'
 import assert from 'node:assert'
 import { binarySearch } from './binary-search.js'
 
-const testBinarySearch = (
+export const testBinarySearch = (
   binarySearch: (a: number[], value: number) => number
 ): any => describe('Binary Search Function', () => {
   test('should find the target value in a sorted array', () => {
