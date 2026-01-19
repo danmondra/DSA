@@ -307,148 +307,118 @@ export class BinarySearchTree implements BinarySearchTreeContract {
 
     const tree: string[] = []
     const createRoot = (): string => {
-      const spaces = (treeWidth - lastNodeDigits) / 2
       const totalRootDigits = this.root!.value.toString(10).length
-      assert(lastNodeDigits > totalRootDigits)
+      console.log({ totalRootDigits, lastNodeDigits })
+      assert(lastNodeDigits >= totalRootDigits)
 
-      const emptyDigits = lastNodeDigits - totalRootDigits
+      const text = this.root!.value.toString(10).padStart(lastNodeDigits, ' ')
+      const start = Math.floor((treeWidth - lastNodeDigits) / 2)
+      const spaces = ' '.repeat(start)
 
-      tree.push(' '.repeat(spaces) + ' '.repeat(emptyDigits) + this.root!.value.toString(10) + ' '.repeat(spaces))
+      tree.push(spaces + text + ' '.repeat(treeWidth - start - lastNodeDigits))
 
       return tree[0]
     }
+    const root = createRoot()
 
-    const createLevels = (): void => {
-      const SPACE_SIZE = 3
-      const COUSIN_GAP = 1
-      const allLevelsNodes: Array<Array<BinaryTreeNode | null>> = []
+    const totalLines = (treeHeight * 2) - 1
+    for (let i = 1; i < totalLines; i++)
+      tree.push(' '.repeat(treeWidth))
 
-      for (let l = 0; l < treeHeight; l++) {
-        const levelNodes: Array<BinaryTreeNode | null> = []
-        const q = new QueueAsLinkedList<BinaryTreeNode | null>()
-        q.enqueue(this.root)
+    const setAt = (lineIndex: number, col: number, text: string): void => {
+      if (lineIndex < 0 || lineIndex >= tree.length) return
+      if (col < 0 || col >= treeWidth) return
 
-        for (let d = 0; d < l; d++) {
-          const levelSize = q.size()
-          for (let i = 0; i < levelSize; i++) {
-            const node = q.dequeue()!
-            q.enqueue(node ? node.left : null)
-            q.enqueue(node ? node.right : null)
-          }
+      const safeText = text.slice(0, treeWidth - col)
+      tree[lineIndex] = tree[lineIndex].slice(0, col) + safeText + tree[lineIndex].slice(col + safeText.length)
+    }
+
+    const placeValue = (lineIndex: number, centerX: number, value: number): void => {
+      const raw = value.toString(10)
+      const text = raw.padStart(lastNodeDigits, ' ')
+      const start = Math.max(0, Math.min(treeWidth - lastNodeDigits, centerX - Math.floor(lastNodeDigits / 2)))
+      setAt(lineIndex, start, text)
+    }
+
+    const centerX = (level: number, index: number): number => {
+      const slots = 2 ** level
+      const slotWidth = treeWidth / slots
+      return Math.floor((index + 0.5) * slotWidth)
+    }
+
+    const walk = (node: BinaryTreeNode | null, level: number, index: number): void => {
+      if (node === null) return
+
+      const nodeLine = level * 2
+      const slashLine = nodeLine + 1
+      const x = centerX(level, index)
+
+      if (level !== 0)
+        placeValue(nodeLine, x, node.value)
+
+      if (node.left !== null) {
+        const childX = centerX(level + 1, (index * 2))
+        const slashX = Math.floor((x * 0.25) + (childX * 0.75))
+        setAt(slashLine, slashX, '/')
+
+        let valueStart: number
+        if (level === 0) {
+          const start = Math.floor((treeWidth - lastNodeDigits) / 2)
+          const totalRootDigits = this.root!.value.toString(10).length
+          valueStart = start + (lastNodeDigits - totalRootDigits)
+        } else {
+          const raw = node.value.toString(10)
+          const start = Math.max(0, Math.min(treeWidth - lastNodeDigits, x - Math.floor(lastNodeDigits / 2)))
+          valueStart = start + (lastNodeDigits - raw.length)
         }
 
-        const levelSize = q.size()
-        for (let i = 0; i < levelSize; i++) {
-          const node = q.dequeue()!
-          levelNodes.push(node)
-        }
+        if (slashX < valueStart - 1)
+          setAt(nodeLine, slashX + 1, '_'.repeat(valueStart - slashX - 1))
 
-        allLevelsNodes.push(levelNodes)
+        walk(node.left, level + 1, (index * 2))
       }
 
-      for (let level = 1; level < treeHeight; level++) {
-        const levelNodes = allLevelsNodes[level]
-        const parentNodes = allLevelsNodes[level - 1]
+      if (node.right !== null) {
+        const childX = centerX(level + 1, (index * 2) + 1)
+        const slashX = Math.floor((x * 0.25) + (childX * 0.75))
+        setAt(slashLine, slashX, '\\')
 
-        let slashLine = ''
-        let nodeLine = ''
-
-        const nodesAtLevel = 2 ** level
-        const nodeWidth = nodesAtLevel * lastNodeDigits
-        const spacesBetweenSiblings = (nodesAtLevel / 2) * SPACE_SIZE
-        const spacesBetweenCousins = ((nodesAtLevel / 2) - 1) * (SPACE_SIZE + COUSIN_GAP)
-        const totalLevelWidth = nodeWidth + spacesBetweenSiblings + spacesBetweenCousins
-        const levelPadding = Math.trunc((treeWidth - totalLevelWidth) / 2)
-
-        const parentPositions: number[] = []
-        const parentNodesAtLevel = 2 ** (level - 1)
-        const parentNodeWidth = parentNodesAtLevel * lastNodeDigits
-        const parentSpacesBetweenSiblings = (parentNodesAtLevel / 2) * SPACE_SIZE
-        const parentSpacesBetweenCousins = ((parentNodesAtLevel / 2) - 1) * (SPACE_SIZE + COUSIN_GAP)
-        const parentTotalLevelWidth = parentNodeWidth + parentSpacesBetweenSiblings + parentSpacesBetweenCousins
-        const parentLevelPadding = Math.trunc((treeWidth - parentTotalLevelWidth) / 2)
-
-        let pos = parentLevelPadding
-        for (let i = 0; i < parentNodesAtLevel; i++) {
-          parentPositions[i] = pos
-          pos += lastNodeDigits
-          if (i < parentNodesAtLevel - 1) {
-            pos += (i % 2 === 0) ? SPACE_SIZE : (SPACE_SIZE + COUSIN_GAP)
-          }
+        let valueEnd: number
+        if (level === 0) {
+          const start = Math.floor((treeWidth - lastNodeDigits) / 2)
+          const totalRootDigits = this.root!.value.toString(10).length
+          valueEnd = start + (lastNodeDigits - totalRootDigits) + totalRootDigits - 1
+        } else {
+          const raw = node.value.toString(10)
+          const start = Math.max(0, Math.min(treeWidth - lastNodeDigits, x - Math.floor(lastNodeDigits / 2)))
+          const valueStart = start + (lastNodeDigits - raw.length)
+          valueEnd = valueStart + raw.length - 1
         }
 
-        const levelPositions: number[] = []
-        pos = levelPadding
-        for (let i = 0; i < nodesAtLevel; i++) {
-          levelPositions[i] = pos
-          pos += lastNodeDigits
-          if (i < nodesAtLevel - 1) {
-            pos += (i % 2 === 0) ? SPACE_SIZE : (SPACE_SIZE + COUSIN_GAP)
-          }
-        }
+        if (slashX > valueEnd + 1)
+          setAt(nodeLine, valueEnd + 1, '_'.repeat(slashX - valueEnd - 1))
 
-        for (let i = 0; i < levelNodes.length; i++) {
-          const node = levelNodes[i]
-          const targetPos = levelPositions[i]
-
-          while (nodeLine.length < targetPos) {
-            nodeLine += ' '
-          }
-
-          if (node) {
-            const nodeValue = node.value.toString(10)
-            const emptyDigits = lastNodeDigits - nodeValue.length
-            nodeLine += ' '.repeat(emptyDigits) + nodeValue
-          } else {
-            nodeLine += ' '.repeat(lastNodeDigits)
-          }
-
-          if (level < treeHeight - 1) {
-            const parentIndex = Math.trunc(i / 2)
-            const isLeft = i % 2 === 0
-            const parent = parentNodes[parentIndex]
-
-            if (parent) {
-              const parentValue = parent.value.toString(10)
-              const parentDigits = parentValue.length
-              const parentActualPos = parentPositions[parentIndex]
-
-              if (isLeft && parent.left === node) {
-                const slashPos = Math.trunc((parentActualPos + parentDigits + targetPos) / 2)
-                while (slashLine.length < slashPos) {
-                  slashLine += ' '
-                }
-                slashLine += '/'
-              } else if (!isLeft && parent.right === node) {
-                const slashPos = Math.trunc((parentActualPos + targetPos + lastNodeDigits) / 2)
-                while (slashLine.length < slashPos) {
-                  slashLine += ' '
-                }
-                slashLine += '\\'
-              }
-            }
-          }
-        }
-
-        if (level < treeHeight - 1) {
-          tree.push(slashLine)
-        }
-        tree.push(nodeLine)
+        walk(node.right, level + 1, (index * 2) + 1)
       }
     }
 
-    createRoot()
-    createLevels()
+    walk(this.root, 0, 0)
 
     console.log(tree.join('\n'))
+    console.log({ treeWidth, treeHeight, tree: tree.join('\n') })
   }
 }
 
 // 2³ = 2 x 2 x 2 = 8
 // 2⁴ = 2 x 2 x 2 x 2 = 16
 
-const arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
-const bst = new BinarySearchTree().create(arr)
+// const arr =
+// [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
+const bst = new BinarySearchTree()
+bst.insert(1)
+bst.insert(2)
+bst.insert(3)
+bst.insert(4)
 
 bst.logPretty()
 // console.dir(bst, { depth: Infinity })
