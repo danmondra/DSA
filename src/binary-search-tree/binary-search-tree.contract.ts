@@ -18,4 +18,6 @@ export abstract class BinarySearchTreeContract {
   abstract insert: (value: number, node: BinaryTreeNode) => void
 
   abstract remove: (value: number) => void
+
+  abstract logPretty: () => void
 }

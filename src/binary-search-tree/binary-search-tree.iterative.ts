@@ -132,34 +132,35 @@ export class BinarySearchTree implements BinarySearchTreeContract {
   }
 
   /*
-  This approach uses a BFS-like algorithm
-  using a queue to breadthly insert nodes.
+     This approach uses a BFS-like algorithm
+     (level order traversal)
+     using a queue to breadthly insert nodes.
 
-  For the next ordered array:
-  [1, 2, 3, 4, 5, 6, 7, 8, 9]
-  length: 9
-  The middlepoint is calculated as:
-  Math.trunc((start + end) / 2)
+     For the next ordered array:
+     [1, 2, 3, 4, 5, 6, 7, 8, 9]
+     length: 9
+     The middlepoint is calculated as:
+     Math.trunc((start + end) / 2)
 
-  And the BST is built as:
-  [{ n: 5, s: 0, e: 8 }]
-  [{ n: 2, s: 0, e: 3 }, { n: 7, s: 5, e: 8 }]
-  [{ n: 7, s: 5, e: 8 }, { n: 1, s: 0, e: 0 }, { n: 3, s: 2, e: 3 }]
-  [{ n: 1, s: 0, e: 0 }, { n: 3, s: 2, e: 3 }, { n: 6, s: 5, e: 5 }, { n: 8, s: 7, e: 8 }]
-  [{ n: 3, s: 2, e: 3 }, { n: 6, s: 5, e: 5 }, { n: 8, s: 7, e: 8 }]
-  [{ n: 6, s: 5, e: 5 }, { n: 8, s: 7, e: 8 }, { n: 4, s: 3, e: 3 }]
-  [{ n: 8, s: 7, e: 8 }, { n: 4, s: 3, e: 3 }]
-  [{ n: 4, s: 3, e: 3 }, { n: 9, s: 8, e: 8 }]
-  [{ n: 9, s: 8, e: 8 }]
+     And the BST is built as:
+     [{ n: 5, s: 0, e: 8 }]
+     [{ n: 2, s: 0, e: 3 }, { n: 7, s: 5, e: 8 }]
+     [{ n: 7, s: 5, e: 8 }, { n: 1, s: 0, e: 0 }, { n: 3, s: 2, e: 3 }]
+     [{ n: 1, s: 0, e: 0 }, { n: 3, s: 2, e: 3 }, { n: 6, s: 5, e: 5 }, { n: 8, s: 7, e: 8 }]
+     [{ n: 3, s: 2, e: 3 }, { n: 6, s: 5, e: 5 }, { n: 8, s: 7, e: 8 }]
+     [{ n: 6, s: 5, e: 5 }, { n: 8, s: 7, e: 8 }, { n: 4, s: 3, e: 3 }]
+     [{ n: 8, s: 7, e: 8 }, { n: 4, s: 3, e: 3 }]
+     [{ n: 4, s: 3, e: 3 }, { n: 9, s: 8, e: 8 }]
+     [{ n: 9, s: 8, e: 8 }]
 
-               ____5____
-              /         \
-            2            7
-           /  \        /   \
-         1      3     6     8
-        / \    / \   / \   / \
-                 4            9
-  */
+          ____5____
+         /         \
+        2           7
+       /  \        /  \
+      1     3     6     8
+     / \   / \   / \   / \
+        4                 9
+   */
 
   create (sortedArr: number[]): this {
     type NodeData = { node: BinaryTreeNode, start: number, end: number }
@@ -176,8 +177,6 @@ export class BinarySearchTree implements BinarySearchTreeContract {
     q.enqueue(nodeData(this.root, 0, n - 1))
 
     while (!q.isEmpty()) {
-      console.dir(q.toArray().map(obj => ({ n: obj.node.value, s: obj.start, e: obj.end })), { breakLength: 1000 })
-      debugger
       const d = q.dequeue()!
       const { node, start, end } = d
 
@@ -198,9 +197,258 @@ export class BinarySearchTree implements BinarySearchTreeContract {
 
     return this
   }
+
+  getLast (): number | undefined {
+    let last = this.root
+    if (last === null) return undefined
+
+    while (last.right)
+      last = last.right
+
+    return last.value
+  }
+
+  /*
+   *
+   * Type of lines
+   * 1. root ->
+   *    - it requires padding spaces
+   * 2. slashes ->
+   *    - requires / before the previous half
+   *    - requires \ before the previous half
+   * 3. nodes ->
+   *    - requires spaces between nodes
+   *    - respect amount of digits
+   *
+   * Concerns
+   * - Big trees (too separated leafs)
+   * - Big digits
+   *
+   * Calculating the height of tree
+   * #1 approach (balanced BST)
+   * The formula log_2(arr.length) is used to calculate
+   * the amount of levels in a BST. We use base 2
+   * because we have left and right, that is two nodes.
+   *
+   * #2 approach (non-balanced BST)
+   * We need to traverse the node to know the amount of
+   * nodes. We can use a level order traversal. In each
+   * recursive iteration we can make sure to
+   *
+   * Traversing and building the ASCII tree
+   * We are going to use a depth first traversal
+   *
+   *
+   * Testing
+   *   2
+   *  / \
+   * 1   3
+   *
+   *       5
+   *    /     \
+   *   3       7
+   *  / \     / \
+   * 1   2   6   8
+
+             _____5______
+            /            \
+           2              7
+         /   \         /     \
+         1      3     6      _8__
+        / \    / \   / \    /    \
+                  4               9
+   * */
+  logPretty (): void {
+    if (this.root === null) {
+      console.log('')
+      return
+    }
+
+    const calculateHeight = (node: BinaryTreeNode | null): number => {
+      if (node === null) return 0
+
+      const leftResult = calculateHeight(node.left)
+      const rightResult = calculateHeight(node.right)
+
+      return Math.max(leftResult, rightResult) + 1
+    }
+    const treeHeight = calculateHeight(this.root)
+
+    const lastNodeDigits = this.getLast()!.toString(10).length
+    const calculateWidth = (): number => {
+      const SPACE_SIZE = 3
+      const lastLevelNodes = 2 ** (treeHeight - 1)
+
+      const lastLevelWidth =
+        (lastLevelNodes * lastNodeDigits) + // totalDigits
+        ((lastLevelNodes / 2) * SPACE_SIZE) + // spaces between siblings
+        (((lastLevelNodes / 2) - 1) * (SPACE_SIZE + 1)) // spaces between cousins
+      // supposing:
+      // -=empty digit (no node)
+      // s=single space
+      // arr = [1, 2, 3]
+      //             | / \ |
+      // last level: |2sss3|
+      // width = 5
+      //
+      // arr = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+      //             | / \      / \      / \      / \ |
+      // last level: |-sss-ssss-sss4ssss-sss-ssss-sss9|
+      // width = 32
+      //
+      // arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+      //             |  / \        / \        / \        / \        / \        / \        / \        / \  |
+      // last level: |--sss--ssss--sss--ssss--sss--ssss--sss--ssss--sss--ssss--sss--ssss--sss--ssss--sss16|
+      // width = 84
+
+      return lastLevelWidth
+    }
+    const treeWidth = calculateWidth()
+
+    const tree: string[] = []
+    const createRoot = (): string => {
+      const spaces = (treeWidth - lastNodeDigits) / 2
+      const totalRootDigits = this.root!.value.toString(10).length
+      assert(lastNodeDigits > totalRootDigits)
+
+      const emptyDigits = lastNodeDigits - totalRootDigits
+
+      tree.push(' '.repeat(spaces) + ' '.repeat(emptyDigits) + this.root!.value.toString(10) + ' '.repeat(spaces))
+
+      return tree[0]
+    }
+
+    const createLevels = (): void => {
+      const SPACE_SIZE = 3
+      const COUSIN_GAP = 1
+      const allLevelsNodes: Array<Array<BinaryTreeNode | null>> = []
+
+      for (let l = 0; l < treeHeight; l++) {
+        const levelNodes: Array<BinaryTreeNode | null> = []
+        const q = new QueueAsLinkedList<BinaryTreeNode | null>()
+        q.enqueue(this.root)
+
+        for (let d = 0; d < l; d++) {
+          const levelSize = q.size()
+          for (let i = 0; i < levelSize; i++) {
+            const node = q.dequeue()!
+            q.enqueue(node ? node.left : null)
+            q.enqueue(node ? node.right : null)
+          }
+        }
+
+        const levelSize = q.size()
+        for (let i = 0; i < levelSize; i++) {
+          const node = q.dequeue()!
+          levelNodes.push(node)
+        }
+
+        allLevelsNodes.push(levelNodes)
+      }
+
+      for (let level = 1; level < treeHeight; level++) {
+        const levelNodes = allLevelsNodes[level]
+        const parentNodes = allLevelsNodes[level - 1]
+
+        let slashLine = ''
+        let nodeLine = ''
+
+        const nodesAtLevel = 2 ** level
+        const nodeWidth = nodesAtLevel * lastNodeDigits
+        const spacesBetweenSiblings = (nodesAtLevel / 2) * SPACE_SIZE
+        const spacesBetweenCousins = ((nodesAtLevel / 2) - 1) * (SPACE_SIZE + COUSIN_GAP)
+        const totalLevelWidth = nodeWidth + spacesBetweenSiblings + spacesBetweenCousins
+        const levelPadding = Math.trunc((treeWidth - totalLevelWidth) / 2)
+
+        const parentPositions: number[] = []
+        const parentNodesAtLevel = 2 ** (level - 1)
+        const parentNodeWidth = parentNodesAtLevel * lastNodeDigits
+        const parentSpacesBetweenSiblings = (parentNodesAtLevel / 2) * SPACE_SIZE
+        const parentSpacesBetweenCousins = ((parentNodesAtLevel / 2) - 1) * (SPACE_SIZE + COUSIN_GAP)
+        const parentTotalLevelWidth = parentNodeWidth + parentSpacesBetweenSiblings + parentSpacesBetweenCousins
+        const parentLevelPadding = Math.trunc((treeWidth - parentTotalLevelWidth) / 2)
+
+        let pos = parentLevelPadding
+        for (let i = 0; i < parentNodesAtLevel; i++) {
+          parentPositions[i] = pos
+          pos += lastNodeDigits
+          if (i < parentNodesAtLevel - 1) {
+            pos += (i % 2 === 0) ? SPACE_SIZE : (SPACE_SIZE + COUSIN_GAP)
+          }
+        }
+
+        const levelPositions: number[] = []
+        pos = levelPadding
+        for (let i = 0; i < nodesAtLevel; i++) {
+          levelPositions[i] = pos
+          pos += lastNodeDigits
+          if (i < nodesAtLevel - 1) {
+            pos += (i % 2 === 0) ? SPACE_SIZE : (SPACE_SIZE + COUSIN_GAP)
+          }
+        }
+
+        for (let i = 0; i < levelNodes.length; i++) {
+          const node = levelNodes[i]
+          const targetPos = levelPositions[i]
+
+          while (nodeLine.length < targetPos) {
+            nodeLine += ' '
+          }
+
+          if (node) {
+            const nodeValue = node.value.toString(10)
+            const emptyDigits = lastNodeDigits - nodeValue.length
+            nodeLine += ' '.repeat(emptyDigits) + nodeValue
+          } else {
+            nodeLine += ' '.repeat(lastNodeDigits)
+          }
+
+          if (level < treeHeight - 1) {
+            const parentIndex = Math.trunc(i / 2)
+            const isLeft = i % 2 === 0
+            const parent = parentNodes[parentIndex]
+
+            if (parent) {
+              const parentValue = parent.value.toString(10)
+              const parentDigits = parentValue.length
+              const parentActualPos = parentPositions[parentIndex]
+
+              if (isLeft && parent.left === node) {
+                const slashPos = Math.trunc((parentActualPos + parentDigits + targetPos) / 2)
+                while (slashLine.length < slashPos) {
+                  slashLine += ' '
+                }
+                slashLine += '/'
+              } else if (!isLeft && parent.right === node) {
+                const slashPos = Math.trunc((parentActualPos + targetPos + lastNodeDigits) / 2)
+                while (slashLine.length < slashPos) {
+                  slashLine += ' '
+                }
+                slashLine += '\\'
+              }
+            }
+          }
+        }
+
+        if (level < treeHeight - 1) {
+          tree.push(slashLine)
+        }
+        tree.push(nodeLine)
+      }
+    }
+
+    createRoot()
+    createLevels()
+
+    console.log(tree.join('\n'))
+  }
 }
 
-const sortedArray = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-const bst = new BinarySearchTree().create(sortedArray)
+// 2³ = 2 x 2 x 2 = 8
+// 2⁴ = 2 x 2 x 2 x 2 = 16
 
-console.dir(bst, { depth: Infinity })
+const arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+const bst = new BinarySearchTree().create(arr)
+
+bst.logPretty()
+// console.dir(bst, { depth: Infinity })
