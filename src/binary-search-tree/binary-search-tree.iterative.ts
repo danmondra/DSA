@@ -16,6 +16,11 @@ export class BinarySearchTree implements BinarySearchTreeContract {
       if (value === currentNode.value) return currentNode
 
       if (currentNode.value > value) {
+        if (currentNode.left === null) {
+          currentNode.left = new BinaryTreeNode(value)
+          break
+        }
+
         currentNode = currentNode.left
         continue
       }
@@ -292,8 +297,13 @@ export class BinarySearchTree implements BinarySearchTreeContract {
       // width = 5
       //
       // arr = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+      //             |                5               |
+      //             |        /               \       |
+      //             |       2                 7      | // 2 formula = (amountOfDigits + '/'.length) * (treeHeight - currentLevel)
+      //             |   /      \          /      \   |
+      //             |  1        3        6        8  | // 3
       //             | / \      / \      / \      / \ |
-      // last level: |-sss-ssss-sss4ssss-sss-ssss-sss9|
+      // last level: |-sss-ssss-sss4ssss-sss-ssss-sss9| // 4
       // width = 32
       //
       // arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
@@ -321,89 +331,6 @@ export class BinarySearchTree implements BinarySearchTreeContract {
     }
     const root = createRoot()
 
-    const totalLines = (treeHeight * 2) - 1
-    for (let i = 1; i < totalLines; i++)
-      tree.push(' '.repeat(treeWidth))
-
-    const setAt = (lineIndex: number, col: number, text: string): void => {
-      if (lineIndex < 0 || lineIndex >= tree.length) return
-      if (col < 0 || col >= treeWidth) return
-
-      const safeText = text.slice(0, treeWidth - col)
-      tree[lineIndex] = tree[lineIndex].slice(0, col) + safeText + tree[lineIndex].slice(col + safeText.length)
-    }
-
-    const placeValue = (lineIndex: number, centerX: number, value: number): void => {
-      const raw = value.toString(10)
-      const text = raw.padStart(lastNodeDigits, ' ')
-      const start = Math.max(0, Math.min(treeWidth - lastNodeDigits, centerX - Math.floor(lastNodeDigits / 2)))
-      setAt(lineIndex, start, text)
-    }
-
-    const centerX = (level: number, index: number): number => {
-      const slots = 2 ** level
-      const slotWidth = treeWidth / slots
-      return Math.floor((index + 0.5) * slotWidth)
-    }
-
-    const walk = (node: BinaryTreeNode | null, level: number, index: number): void => {
-      if (node === null) return
-
-      const nodeLine = level * 2
-      const slashLine = nodeLine + 1
-      const x = centerX(level, index)
-
-      if (level !== 0)
-        placeValue(nodeLine, x, node.value)
-
-      if (node.left !== null) {
-        const childX = centerX(level + 1, (index * 2))
-        const slashX = Math.floor((x * 0.25) + (childX * 0.75))
-        setAt(slashLine, slashX, '/')
-
-        let valueStart: number
-        if (level === 0) {
-          const start = Math.floor((treeWidth - lastNodeDigits) / 2)
-          const totalRootDigits = this.root!.value.toString(10).length
-          valueStart = start + (lastNodeDigits - totalRootDigits)
-        } else {
-          const raw = node.value.toString(10)
-          const start = Math.max(0, Math.min(treeWidth - lastNodeDigits, x - Math.floor(lastNodeDigits / 2)))
-          valueStart = start + (lastNodeDigits - raw.length)
-        }
-
-        if (slashX < valueStart - 1)
-          setAt(nodeLine, slashX + 1, '_'.repeat(valueStart - slashX - 1))
-
-        walk(node.left, level + 1, (index * 2))
-      }
-
-      if (node.right !== null) {
-        const childX = centerX(level + 1, (index * 2) + 1)
-        const slashX = Math.floor((x * 0.25) + (childX * 0.75))
-        setAt(slashLine, slashX, '\\')
-
-        let valueEnd: number
-        if (level === 0) {
-          const start = Math.floor((treeWidth - lastNodeDigits) / 2)
-          const totalRootDigits = this.root!.value.toString(10).length
-          valueEnd = start + (lastNodeDigits - totalRootDigits) + totalRootDigits - 1
-        } else {
-          const raw = node.value.toString(10)
-          const start = Math.max(0, Math.min(treeWidth - lastNodeDigits, x - Math.floor(lastNodeDigits / 2)))
-          const valueStart = start + (lastNodeDigits - raw.length)
-          valueEnd = valueStart + raw.length - 1
-        }
-
-        if (slashX > valueEnd + 1)
-          setAt(nodeLine, valueEnd + 1, '_'.repeat(slashX - valueEnd - 1))
-
-        walk(node.right, level + 1, (index * 2) + 1)
-      }
-    }
-
-    walk(this.root, 0, 0)
-
     console.log(tree.join('\n'))
     console.log({ treeWidth, treeHeight, tree: tree.join('\n') })
   }
@@ -412,13 +339,10 @@ export class BinarySearchTree implements BinarySearchTreeContract {
 // 2³ = 2 x 2 x 2 = 8
 // 2⁴ = 2 x 2 x 2 x 2 = 16
 
-// const arr =
+const arr = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 // [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
 const bst = new BinarySearchTree()
-bst.insert(1)
-bst.insert(2)
-bst.insert(3)
-bst.insert(4)
+  .create(arr)
 
 bst.logPretty()
 // console.dir(bst, { depth: Infinity })

@@ -3,7 +3,7 @@
     "outDir":  "./dist",
     "noEmit": true,
     "module": "nodenext",
-    "allowImportingTsExtensions": false,
+    "allowImportingTsExtensions": true,
     "esModuleInterop": true,
     "target": "esnext",
     "strict": true

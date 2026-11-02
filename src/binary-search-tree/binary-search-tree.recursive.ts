@@ -1,4 +1,3 @@
-import assert from 'node:assert'
 import { BinarySearchTreeContract, BinaryTreeNode } from './binary-search-tree.contract.js'
 
 export class BinarySearchTree implements BinarySearchTreeContract {
@@ -167,7 +166,7 @@ export class BinarySearchTree implements BinarySearchTreeContract {
     // Given the next order of conditions, when only one node remains
     // to be added, the node is always placed on the left side.
     //
-    // this will always be true (high >= low)
+    // assert(high >= low)
 
     current.left = this.create(sortedArray, low, middleElement - 1) as BinaryTreeNode
     current.right = this.create(sortedArray, middleElement + 1, high) as BinaryTreeNode
